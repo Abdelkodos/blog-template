@@ -1,0 +1,24 @@
+# Cloudflare Pages configuration
+# Docs: https://developers.cloudflare.com/pages/
+
+name = "blog-template"
+compatibility_date = "2024-07-29"
+pages_build_output_dir = "dist"
+
+# ─── Local dev preview ───────────────────────────────────────────────────────
+# Run `wrangler pages dev dist` after building to preview locally via Cloudflare.
+# For live development, still use: pnpm start  (or  pnpm dev  with TinaCMS)
+
+# ─── Environment variables ───────────────────────────────────────────────────
+# Set these in the Cloudflare Pages dashboard (Settings → Environment variables)
+# or uncomment and define them here for local wrangler usage.
+#
+# [vars]
+# TINA_PUBLIC_CLIENT_ID  = ""   # TinaCMS Cloud client ID
+# TINA_TOKEN             = ""   # TinaCMS read-only token (non-secret)
+
+# ─── Deployment notes ────────────────────────────────────────────────────────
+# Build command : pnpm build
+#   (the postbuild hook runs `pagefind --site dist` automatically)
+# Output dir    : dist
+# Node version  : set NODE_VERSION=18.17.0 in the Pages dashboard env vars
