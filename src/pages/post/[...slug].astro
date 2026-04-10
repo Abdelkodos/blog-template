@@ -4,7 +4,6 @@ import BlogPost from '@/layouts/BlogPost'
 import Code from '@/components/mdx/Code'
 import ListRelatedPosts from '@/components/ListRelatedPosts'
 import Share from '@/components/Share'
-import TableOfContents from '@/components/TableOfContents'
 import { getPosts } from '@/utils'
 import SButton from '@/components/mdx/SButton'
 import Disqus from '@/components/Disqus'
@@ -13,7 +12,6 @@ import { disqusConfig } from '@/data/disqus.config'
 const posts = await getCollection('blog')
 export async function getStaticPaths() {
 	const posts = await getPosts()
-
 	return posts.map((post) => ({
 		params: { slug: post.slug },
 		props: post
@@ -32,9 +30,7 @@ const getRelatedPosts = (post: Props) => {
 }
 
 const relatedPosts = getRelatedPosts(post)
-
 const { Content, headings, remarkPluginFrontmatter } = await post.render()
-
 const disqusEnabled = disqusConfig.enabled
 ---
 
@@ -44,28 +40,34 @@ const disqusEnabled = disqusConfig.enabled
 	headings={headings}
 	readTime={remarkPluginFrontmatter.minutesRead}
 >
-	<div class='grid grid-cols-1 md:grid-cols-[20%_auto] gap-10 mt-8'>
-		<!-- aside  -->
-		<aside class='md:flex flex-col gap-8 hidden'>
-			<Share />
-			<div class='sticky top-24 self-start hidden md:block transition-all duration-200'>
-				{headings && headings.length > 0 && <TableOfContents {headings} />}
-			</div>
-		</aside>
+	<!-- Main content -->
+	<Content components={{ pre: Code, SButton }} />
 
-		<!-- post -->
-		<article class='max-w-full w-full'>
-			<div class='prose prose-lg md:prose-xl dark:prose-invert mb-12 min-w-full'>
-				<Content components={{ pre: Code, SButton }} />
-			</div>
+	<!-- Share bar -->
+	<Share slot='share' />
 
-			<!-- related posts -->
-			<footer>
-				<h2 class='font-bold text-lg dark:text-white mb-6'>Related Posts</h2>
-				<ListRelatedPosts posts={relatedPosts} />
-			</footer>
-		</article>
+	<!-- Related posts -->
+	<ListRelatedPosts slot='related' posts={relatedPosts} />
+
+	<!-- Comments -->
+	{disqusEnabled && <Disqus slot='comments' />}
+
+	<!-- Comments input (always shown, inkwell style) -->
+	<div slot='comments' class='mt-8'>
+		<h2 class='font-bold text-lg text-gray-900 dark:text-white mb-4'>Comments</h2>
+		<div
+			class='flex gap-3 items-center border border-gray-200 dark:border-gray-700 rounded-2xl p-3'
+		>
+			<input
+				type='text'
+				placeholder='Add a comment...'
+				class='flex-1 bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 outline-none'
+			/>
+			<button
+				class='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors'
+			>
+				Post
+			</button>
+		</div>
 	</div>
-
-	{disqusEnabled && <Disqus />}
 </BlogPost>

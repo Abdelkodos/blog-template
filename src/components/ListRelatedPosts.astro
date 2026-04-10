@@ -1,42 +1,45 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-
-import { cn } from '@/utils'
 import { Image } from 'astro:assets'
+import { siteConfig } from '@/data/site.config'
 
 type Props = {
 	posts: CollectionEntry<'blog'>[]
+	title?: string
 }
 
-const { posts } = Astro.props
+const { posts, title = `More from ${siteConfig.author}` } = Astro.props
 ---
 
-<section class={cn(`flex flex-col md:flex-row sm:justify-between gap-8`)}>
+<section>
+	<h2 class='font-bold text-lg text-gray-900 dark:text-white mb-4'>{title}</h2>
+
 	{
 		posts.length > 0 ? (
-			posts.map((post) => {
-				return (
-					<div class='flex flex-wrap gap-2'>
-						<div class='min-h-full'>
+			<div class='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+				{posts.map((post: CollectionEntry<'blog'>) => (
+					<a
+						href={`/post/${post.slug}/`}
+						class='flex gap-3 items-start group rounded-xl border border-gray-200 dark:border-gray-700 p-3 hover:border-gray-300 dark:hover:border-gray-600 transition-colors'
+					>
+						<div class='w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg'>
 							<Image
 								src={post.data.heroImage}
-								width={200}
-								height={200}
+								width={80}
+								height={80}
 								format='webp'
-								class='w-16 h-16 object-cover rounded-full  '
+								class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
 								alt={`img of ${post.data.title}`}
 							/>
 						</div>
-						<header class='flex justify-center items-center'>
-							<a class='font-medium  hover:underline' href={`/post/${post.slug}/`}>
-								{post.data.title}
-							</a>
-						</header>
-					</div>
-				)
-			})
+						<p class='text-sm font-semibold text-gray-800 dark:text-gray-200 leading-snug line-clamp-3 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors'>
+							{post.data.title}
+						</p>
+					</a>
+				))}
+			</div>
 		) : (
-			<span class='text-gray-500'>There are no related posts yet. 😢</span>
+			<p class='text-gray-500 dark:text-gray-400 text-sm'>No related posts yet.</p>
 		)
 	}
 </section>

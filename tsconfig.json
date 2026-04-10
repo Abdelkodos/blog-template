@@ -4,6 +4,7 @@
 		"strictNullChecks": true,
 		"baseUrl": ".",
 		"verbatimModuleSyntax": true,
+		"module": "ESNext",
 		"paths": {
 			"@/components/*": ["src/components/*.astro"],
 			"@/layouts/*": ["src/layouts/*.astro"],

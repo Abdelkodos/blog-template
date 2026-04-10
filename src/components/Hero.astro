@@ -1,0 +1,26 @@
+---
+type Props = {
+	headline?: string
+	subheadline?: string
+}
+
+const {
+	headline = 'Discover New Voices.',
+	subheadline = 'A community of writers, thinkers, and creators.'
+} = Astro.props
+---
+
+<section class='bg-slate-100 dark:bg-slate-800/60 rounded-3xl py-14 px-8 text-center'>
+	<h1 class='text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3 leading-tight'>
+		{headline}
+	</h1>
+	<p class='text-gray-500 dark:text-gray-400 text-base md:text-lg mb-8'>
+		{subheadline}
+	</p>
+	<a
+		href='#latest-posts'
+		class='inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-10 py-3 rounded-full transition-colors duration-200'
+	>
+		Start Reading
+	</a>
+</section>

@@ -3,28 +3,55 @@
 @tailwind utilities;
 
 @layer base {
-	/* body {
-		transition: background-color 0.5s ease;
-	} */
+	:root {
+		--color-brand: #16a34a; /* green-600 */
+		--color-badge-bg: #fff7ed; /* orange-50 */
+		--color-badge-text: #ea580c; /* orange-600 */
+	}
 
+	.dark {
+		--color-badge-bg: rgba(154, 52, 18, 0.2);
+		--color-badge-text: #fb923c; /* orange-400 */
+	}
+
+	/* Prose heading colors */
+	.prose h1,
+	.prose h2,
+	.prose h3,
+	.prose h4,
+	.prose h5,
+	.prose h6 {
+		@apply text-zinc-800 dark:text-zinc-100 !important;
+	}
+
+	/* Prose link color */
+	.prose a {
+		@apply text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 no-underline hover:underline;
+	}
+
+	/* Prose blockquote - inkwell style */
+	.prose blockquote {
+		@apply border-l-4 border-green-600 bg-slate-50 dark:bg-slate-800/50 rounded-r-xl px-6 py-4 not-italic;
+	}
+
+	.prose blockquote p {
+		@apply text-xl font-semibold italic text-gray-700 dark:text-gray-200;
+	}
+
+	/* Code blocks */
 	.prose code {
 		@apply text-base;
 	}
 
-	/* prose styles here */
-	.prose h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		@apply text-zinc-800 dark:text-zinc-100   !important;
-	}
-
 	html.dark .shiki,
 	html.dark .shiki span {
-	  color: var(--shiki-dark) !important;
-	  background-color: theme(colors.gray.900) !important;
+		color: var(--shiki-dark) !important;
+		background-color: theme(colors.gray.900) !important;
+	}
+
+	/* Safe area for mobile bottom nav */
+	.pb-safe {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
 	}
 }
 
@@ -37,4 +64,9 @@
 
 .shadow {
 	box-shadow: -5px 3px 8px 1px rgba(0, 0, 0, 0.12);
+}
+
+/* Smooth scroll offset for anchor links */
+[id] {
+	scroll-margin-top: 80px;
 }
