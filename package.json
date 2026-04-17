@@ -20,7 +20,7 @@
 		"url": "https://github.com/Abdelkodos/blog-template/issues"
 	},
 	"scripts": {
-		"dev": "npx tinacms dev -c \"astro dev\"",
+		"dev": "tinacms dev -c \"astro dev\"",
 		"start": "astro dev",
 		"build": "astro build",
 		"sync": "astro sync",
@@ -35,7 +35,9 @@
 	"dependencies": {
 		"@astrojs/rss": "4.0.1",
 		"astro": "4.0.8",
-		"astro-font": "^0.0.72"
+		"astro-font": "^0.0.72",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1"
 	},
 	"devDependencies": {
 		"@astrojs/mdx": "2.0.3",
@@ -63,6 +65,13 @@
 		"tailwindcss": "3.3.5",
 		"tinacms": "^1.5.21",
 		"typescript": "^5.2.2"
+	},
+	"pnpm": {
+		"overrides": {
+			"react": "18.3.1",
+			"react-dom": "18.3.1",
+			"@types/react": "18.3.12"
+		}
 	},
 	"lint-staged": {
 		"*.{astro,js,jsx,ts,tsx,md,mdx,json}": [
