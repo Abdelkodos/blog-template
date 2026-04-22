@@ -1,7 +1,7 @@
 ---
-import { getCategories } from '@/utils'
+import { getBlogCategories } from '@/utils/blog'
 import Category from '@/components/Category'
-const categories = await getCategories()
+const categories = await getBlogCategories()
 
 const { activeCategory } = Astro.props
 ---

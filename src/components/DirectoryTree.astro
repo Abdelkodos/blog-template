@@ -1,0 +1,60 @@
+---
+import type { Category } from '@/utils/learn'
+import { getChildCategories } from '@/utils/learn'
+
+interface Props {
+	category: Category
+	allCategories: Category[]
+	pathMap: Record<string, string>
+	depth: number
+	expandedPath: string
+}
+
+const { category, allCategories, pathMap, depth, expandedPath } = Astro.props
+
+const children = getChildCategories(category.handle, allCategories)
+const catPath = pathMap[category.$id] ?? category.handle
+const isActive = expandedPath === catPath
+const isAncestor = expandedPath.startsWith(catPath + '/')
+const isOpen = isActive || isAncestor
+const hasChildren = children.length > 0
+---
+
+<div
+	class:list={[
+		'select-none',
+		depth > 0 && 'ml-3 border-l border-stone-200 dark:border-stone-700 pl-2'
+	]}
+>
+	<a
+		href={`/learn/${catPath}`}
+		class:list={[
+			'flex items-center gap-1.5 py-1 px-2 rounded-lg text-sm transition-colors w-full',
+			isActive
+				? 'bg-blue-pale dark:bg-blue-dark/20 text-blue dark:text-blue-light font-semibold'
+				: 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-200'
+		]}
+	>
+		<span class='shrink-0 w-3 text-stone-400 text-xs'
+			>{hasChildren ? (isOpen ? '▾' : '▸') : ''}</span
+		>
+		<span class='shrink-0'>{isOpen ? '📂' : '📁'}</span>
+		<span class='truncate'>{category.title}</span>
+	</a>
+
+	{
+		isOpen && hasChildren && (
+			<div class='mt-0.5 mb-0.5'>
+				{children.map((child) => (
+					<Astro.self
+						category={child}
+						allCategories={allCategories}
+						pathMap={pathMap}
+						depth={depth + 1}
+						expandedPath={expandedPath}
+					/>
+				))}
+			</div>
+		)
+	}
+</div>

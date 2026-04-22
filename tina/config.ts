@@ -1,13 +1,15 @@
 import { CATEGORIES } from '../src/data/categories.ts'
 import { defineConfig } from 'tinacms'
 
-// Your hosting provider likely exposes this as an environment variable
+// Learn section (categories + learning posts) is now managed in Appwrite.
+// TinaCMS is kept only for the existing blog posts.
+
 const branch = process.env.HEAD || process.env.VERCEL_GIT_COMMIT_REF || 'main'
 
 export default defineConfig({
 	branch,
-	clientId: null, // Get this from tina.io
-	token: null, // Get this from tina.io
+	clientId: null,
+	token: null,
 
 	build: {
 		outputFolder: 'admin',
@@ -34,7 +36,6 @@ export default defineConfig({
 						name: 'heroImage',
 						description: 'The image used for the cover of the post'
 					},
-
 					{
 						type: 'string',
 						required: true,
@@ -69,9 +70,7 @@ export default defineConfig({
 						label: 'Tags',
 						description: 'Tags for this post',
 						list: true,
-						ui: {
-							component: 'tags'
-						}
+						ui: { component: 'tags' }
 					},
 					{
 						type: 'string',
@@ -86,7 +85,6 @@ export default defineConfig({
 						name: 'SButton',
 						isBody: true,
 						templates: [
-							// Custom Components
 							{
 								label: 'SButton',
 								name: 'SButton',

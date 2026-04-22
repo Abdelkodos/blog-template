@@ -1,0 +1,86 @@
+# Next.js Appwrite CMS Implementation Plan
+
+## Goal
+Build a standalone Next.js application (sub-app) that acts as a Content Management System (CMS). This CMS will allow users to seamlessly add, edit, and manage data directly within the Appwrite database via a friendly interface, replacing the need for local markdown files or manual database entry.
+
+## Appwrite Database Schema Mapping
+
+Based on your Appwrite setup screenshots, the CMS will manage the following collections. We will define robust TypeScript interfaces and validation schemas (e.g., Zod) for these within the Next.js app to ensure end-to-end type safety.
+
+### 1. `blog_posts` (Blog Posts)
+*   **title**: `string` (Required, Max 200)
+*   **slug**: `string` (Required, Max 200, Indexed) *— URL identifier.*
+*   **description**: `string` (Required, Max 1000)
+*   **body**: `string` (Required, Max 100000) *— Will use a Markdown Editor in the UI.*
+*   **pubDate**: `string` (Required, Max 100, Indexed)
+*   **heroImage**: `string` (Required, Max 1000) *— Image URL or Appwrite Storage File ID.*
+*   **category**: `string` (Required, Max 200, Indexed)
+*   **tags**: `string[]` (Required, Max 100 each)
+*   **draft**: `boolean` (Required, Indexed)
+*   **readTime**: `string` (Optional, Max 50)
+
+### 2. `learning_posts` (Learning Posts)
+*   **title**: `string` (Required, Max 256)
+*   **description**: `string` (Required, Max 1024)
+*   **pubDate**: `datetime` (Required, Indexed)
+*   **type**: `string` (Required, Max 32, Indexed) *— e.g., 'tutorial-review' or 'news'.*
+*   **draft**: `boolean` (Optional, Default: false, Indexed)
+*   **provider**: `string` (Optional, Max 128)
+*   **rating**: `double` (Optional, Min: 0, Max: 10)
+*   **takeaways**: `string` (Optional, Max 4096)
+*   **body**: `string` (Optional, Max 100000) *— Markdown content.*
+*   **categories**: `string[]` (Optional, Max 128 each)
+*   **projectsBuilt**: `string[]` (Optional, Max 512 each)
+
+### 3. `categories` (Categories)
+*   **title**: `string` (Required, Max 256)
+*   **handle**: `string` (Required, Max 128, Indexed) *— URL-safe slug.*
+*   **description**: `string` (Optional, Max 1024)
+*   **parentCategory**: `string` (Optional, Max 128, Indexed) *— Handle of parent for nesting.*
+
+---
+
+## Technical Stack for CMS
+
+*   **Framework**: Next.js 14+ (App Router)
+*   **Language**: TypeScript
+*   **Styling**: Tailwind CSS (Recommend combining with Shadcn UI for rapid construction of admin-level components like Data Tables, Dialogs, and Forms).
+*   **State / Forms**: `react-hook-form` with `@hookform/resolvers/zod` for strict schema validation before sending to Appwrite.
+*   **Markdown Editor**: Install a WYSIWYG markdown editor (e.g., `@uiw/react-md-editor`) for writing the `body` content of posts.
+*   **Database Client**: `node-appwrite` utilizing Next.js Server Actions for secure CRUD operations.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Authentication:** Should the CMS be protected by a login screen (using Appwrite Authentication), or is this strictly running locally on your machine where no auth is needed? (I highly recommend we set up simple Email/Password Auth if this will ever be deployed).
+
+> [!IMPORTANT]
+> **Project Location:** Where should this Next.js app live?
+> *   **Answer**: Completely separate folder alongside the Astro blog (e.g., `workspace/tutoreviews-cms`).
+
+## Proposed Implementation Phases
+
+### Phase 1: Initialization & Security Setup
+1.  Run `npx create-next-app@latest` in the designated folder.
+2.  Install UI dependencies and configure the Appwrite Server Client using `.env.local` credentials.
+3.  Implement the shell layout (Sidebar Navigation & Header).
+
+### Phase 2: Data Schemas & Server Actions
+1.  Define Zod schemas matching the Appwrite columns for `Categories`, `BlogPosts`, and `LearningPosts`.
+2.  Write Server Actions for `create`, `read`, `update`, and `delete` (CRUD) functionality for each collection.
+
+### Phase 3: Forms and Interfaces
+1.  Build intuitive lists/tables for visualizing existing records.
+2.  Implement forms tailored to specific data types:
+    *   **Categories**: Simple text inputs and a dropdown for `parentCategory`.
+    *   **Posts**: Markdown editors for large text, Tag input components for arrays (`tags`, `projectsBuilt`), and Image Uploader inputs.
+
+### Phase 4: Image Handling 
+*   Implement logic to upload images to an Appwrite Storage Bucket from the CMS form, returning the URL to automatically populate the `heroImage` fields.
+
+## Verification Plan
+1.  Spin up the Next.js CMS dev server.
+2.  Fill out the "Create Category" and "Create Blog Post" forms in the browser.
+3.  Verify the new records appear instantly in your Appwrite Console instance with the correct schema typing.

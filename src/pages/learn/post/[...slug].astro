@@ -1,0 +1,137 @@
+---
+import BaseLayout from '@/layouts/BaseLayout'
+import {
+	getLearnPosts,
+	getLearnPostById,
+	getAllCategories,
+	buildCategoryPathMap
+} from '@/utils/learn'
+
+export async function getStaticPaths() {
+	const posts = await getLearnPosts()
+	return posts.map((post) => ({
+		params: { slug: post.$id },
+		props: { postId: post.$id }
+	}))
+}
+
+interface Props {
+	postId: string
+}
+const { postId } = Astro.props
+
+const post = await getLearnPostById(postId)
+const allCategories = await getAllCategories()
+const pathMap = buildCategoryPathMap(allCategories)
+
+const isReview = post.type === 'tutorial-review'
+const postCategories = allCategories.filter((cat) => post.categories.includes(cat.handle))
+const pubDate = new Date(post.pubDate)
+---
+
+<BaseLayout title={post.title} description={post.description}>
+	<article class='max-w-3xl mx-auto mt-6'>
+		<header class='mb-8'>
+			<div class='flex items-center gap-2 mb-3 flex-wrap'>
+				<span
+					class:list={[
+						'text-xs px-2.5 py-0.5 rounded-full font-medium',
+						isReview
+							? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+							: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+					]}
+				>
+					{isReview ? 'Tutorial Review' : 'News Article'}
+				</span>
+				{post.provider && <span class='text-sm text-stone-400'>{post.provider}</span>}
+			</div>
+
+			<h1 class='text-3xl font-bold leading-tight mb-3'>{post.title}</h1>
+			<p class='text-stone-500 dark:text-stone-400'>{post.description}</p>
+			<p class='text-sm text-stone-400 mt-2'>
+				{pubDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+			</p>
+
+			{
+				postCategories.length > 0 && (
+					<div class='flex flex-wrap gap-2 mt-4'>
+						{postCategories.map((cat) => (
+							<a
+								href={`/learn/${pathMap[cat.$id]}`}
+								class='text-xs px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-blue-pale dark:hover:bg-blue-dark/20 hover:text-blue dark:hover:text-blue-light transition-colors'
+							>
+								📁 {cat.title}
+							</a>
+						))}
+					</div>
+				)
+			}
+		</header>
+
+		{
+			isReview && (
+				<div class='grid grid-cols-2 sm:grid-cols-3 gap-4 p-5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 mb-8'>
+					{post.rating !== undefined && (
+						<div>
+							<p class='text-xs uppercase tracking-widest text-stone-400 mb-1'>Rating</p>
+							<p class='text-3xl font-bold text-blue dark:text-blue-light leading-none'>
+								{post.rating}
+								<span class='text-base text-stone-400 font-normal'>/10</span>
+							</p>
+						</div>
+					)}
+					{post.provider && (
+						<div>
+							<p class='text-xs uppercase tracking-widest text-stone-400 mb-1'>Provider</p>
+							<p class='font-semibold'>{post.provider}</p>
+						</div>
+					)}
+					{post.projectsBuilt.length > 0 && (
+						<div class='col-span-2 sm:col-span-1'>
+							<p class='text-xs uppercase tracking-widest text-stone-400 mb-1'>Projects Built</p>
+							<ul class='text-sm space-y-0.5 text-stone-700 dark:text-stone-300'>
+								{post.projectsBuilt.map((p) => (
+									<li class='flex items-start gap-1'>
+										<span class='shrink-0'>▸</span>
+										<span>{p}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
+				</div>
+			)
+		}
+
+		{
+			isReview && post.takeaways && (
+				<div class='mb-8 p-5 rounded-2xl bg-blue-pale dark:bg-blue-dark/10 border border-blue/20 dark:border-blue-dark/40'>
+					<h2 class='text-sm font-semibold uppercase tracking-widest text-blue-dark dark:text-blue-light mb-3'>
+						Key Takeaways
+					</h2>
+					<p class='text-sm text-stone-700 dark:text-stone-300 whitespace-pre-line'>
+						{post.takeaways}
+					</p>
+				</div>
+			)
+		}
+
+		{
+			post.body && (
+				<div
+					class='prose dark:prose-invert max-w-none'
+					set:html={post.body.replace(/\n/g, '<br>')}
+				/>
+			)
+		}
+
+		<div class='mt-12 pt-6 border-t border-stone-200 dark:border-stone-700'>
+			<a
+				href='/learn'
+				class='text-sm text-stone-400 hover:text-blue dark:hover:text-blue-light transition-colors'
+			>
+				← Back to Library
+			</a>
+		</div>
+	</article>
+</BaseLayout>

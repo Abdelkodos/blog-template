@@ -90,8 +90,8 @@ const URL = Astro.url.href
 			list.push({ url, title })
 			localStorage.setItem('readingList', JSON.stringify(list))
 			btn.textContent = 'Saved!'
-			btn.classList.replace('bg-blue-700', 'bg-green-600')
-			btn.classList.replace('hover:bg-blue-800', 'hover:bg-green-700')
+			btn.classList.replace('bg-blue-700', 'bg-success')
+			btn.classList.replace('hover:bg-blue-800', 'hover:bg-success')
 		} else {
 			btn.textContent = 'Already saved'
 		}

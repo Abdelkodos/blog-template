@@ -1,9 +1,9 @@
 ---
-import { getCategories, getPosts } from '@/utils'
+import { getBlogCategories, getBlogPosts } from '@/utils/blog'
 import { siteConfig } from '@/data/site.config'
 
-const categories = await getCategories()
-const recentPosts = await getPosts(4)
+const categories = await getBlogCategories()
+const recentPosts = await getBlogPosts(4)
 
 // Generate author initials from siteConfig.author
 const authorName = siteConfig.author
@@ -25,7 +25,7 @@ const initials = authorName
 					<li>
 						<a
 							href={`/category/${encodeURIComponent(category.toLowerCase())}/1`}
-							class='block py-3 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 text-sm transition-colors capitalize'
+							class='block py-3 text-gray-600 dark:text-gray-300 hover:text-blue dark:hover:text-blue-light text-sm transition-colors capitalize'
 						>
 							{category}
 						</a>
@@ -41,7 +41,7 @@ const initials = authorName
 		<ul class='flex flex-col gap-3'>
 			<li class='flex items-center gap-3'>
 				<div
-					class='w-9 h-9 rounded-full bg-green-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0'
+					class='w-9 h-9 rounded-full bg-blue flex items-center justify-center text-white text-xs font-bold flex-shrink-0'
 				>
 					{initials}
 				</div>

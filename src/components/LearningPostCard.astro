@@ -1,0 +1,56 @@
+---
+import type { LearningPost } from '@/utils/learn'
+
+interface Props {
+	post: LearningPost
+}
+const { post } = Astro.props
+const { title, description, pubDate, type, provider, rating } = post
+const isReview = type === 'tutorial-review'
+---
+
+<a
+	href={`/learn/post/${post.$id}`}
+	class='group flex flex-col sm:flex-row sm:items-start gap-4 p-4 rounded-2xl border border-stone-200 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500 transition-colors'
+>
+	{
+		isReview && rating !== undefined && (
+			<div class='shrink-0 flex sm:flex-col items-center gap-1 sm:gap-0 sm:w-14 sm:text-center'>
+				<span class='text-2xl font-bold text-blue dark:text-blue-light leading-none'>{rating}</span>
+				<span class='text-xs text-stone-400 leading-none'>/10</span>
+			</div>
+		)
+	}
+
+	<div class='flex-1 min-w-0'>
+		<div class='flex items-center gap-2 mb-1.5 flex-wrap'>
+			<span
+				class:list={[
+					'text-xs px-2 py-0.5 rounded-full font-medium',
+					isReview
+						? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+						: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+				]}
+			>
+				{isReview ? 'Tutorial Review' : 'News'}
+			</span>
+			{provider && <span class='text-xs text-stone-400'>{provider}</span>}
+		</div>
+
+		<h3
+			class='font-semibold text-stone-900 dark:text-stone-100 group-hover:text-blue dark:group-hover:text-blue-light transition-colors leading-snug'
+		>
+			{title}
+		</h3>
+		<p class='text-sm text-stone-500 dark:text-stone-400 mt-1 line-clamp-2'>{description}</p>
+		<p class='text-xs text-stone-400 mt-2'>
+			{
+				new Date(pubDate).toLocaleDateString('en-GB', {
+					day: 'numeric',
+					month: 'short',
+					year: 'numeric'
+				})
+			}
+		</p>
+	</div>
+</a>

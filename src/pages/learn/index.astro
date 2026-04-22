@@ -1,0 +1,91 @@
+---
+import BaseLayout from '@/layouts/BaseLayout'
+import TitlePage from '@/components/TitlePage'
+import DirectoryTree from '@/components/DirectoryTree'
+import LearningPostCard from '@/components/LearningPostCard'
+import {
+	getAllCategories,
+	getLearnPosts,
+	getRootCategories,
+	buildCategoryPathMap
+} from '@/utils/learn'
+
+const allCategories = await getAllCategories()
+const allPosts = await getLearnPosts()
+const pathMap = buildCategoryPathMap(allCategories)
+const rootCategories = getRootCategories(allCategories)
+const latestPosts = allPosts.slice(0, 5)
+---
+
+<BaseLayout
+	title='Learning Library'
+	description='Browse courses, tutorial reviews, and curated tech news by topic'
+>
+	<TitlePage title='Learning Library' />
+
+	<div class='flex gap-8 mt-6'>
+		<aside class='hidden lg:block w-56 shrink-0'>
+			<p
+				class='text-xs uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3 font-semibold'
+			>
+				Browse
+			</p>
+			<nav class='flex flex-col gap-0.5'>
+				{
+					rootCategories.map((cat) => (
+						<DirectoryTree
+							category={cat}
+							allCategories={allCategories}
+							pathMap={pathMap}
+							depth={0}
+							expandedPath=''
+						/>
+					))
+				}
+			</nav>
+		</aside>
+
+		<div class='flex-1 min-w-0'>
+			<section class='mb-10'>
+				<h2 class='text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3'>
+					Directories
+				</h2>
+				<div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+					{
+						rootCategories.map((cat) => (
+							<a
+								href={`/learn/${pathMap[cat.$id]}`}
+								class='flex items-center gap-3 p-4 rounded-2xl border border-stone-200 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500 transition-colors group'
+							>
+								<span class='text-2xl'>📁</span>
+								<div>
+									<p class='font-medium group-hover:text-blue dark:group-hover:text-blue-light transition-colors'>
+										{cat.title}
+									</p>
+									{cat.description && (
+										<p class='text-xs text-stone-400 mt-0.5 line-clamp-1'>{cat.description}</p>
+									)}
+								</div>
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			{
+				latestPosts.length > 0 && (
+					<section>
+						<h2 class='text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3'>
+							Latest
+						</h2>
+						<div class='flex flex-col gap-3'>
+							{latestPosts.map((post) => (
+								<LearningPostCard post={post} />
+							))}
+						</div>
+					</section>
+				)
+			}
+		</div>
+	</div>
+</BaseLayout>

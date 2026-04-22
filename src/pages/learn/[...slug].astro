@@ -1,0 +1,162 @@
+---
+import BaseLayout from '@/layouts/BaseLayout'
+import TitlePage from '@/components/TitlePage'
+import DirectoryTree from '@/components/DirectoryTree'
+import LearningPostCard from '@/components/LearningPostCard'
+import {
+	getAllCategories,
+	getLearnPosts,
+	getChildCategories,
+	filterPostsByCategory,
+	getRootCategories,
+	buildCategoryPathMap,
+	buildPathToCategoryMap,
+	type Category
+} from '@/utils/learn'
+
+export async function getStaticPaths() {
+	const allCategories = await getAllCategories()
+	const pathMap = buildCategoryPathMap(allCategories)
+	return allCategories.map((cat) => ({
+		params: { slug: pathMap[cat.$id] },
+		props: { categoryId: cat.$id }
+	}))
+}
+
+interface Props {
+	categoryId: string
+}
+const { categoryId } = Astro.props
+const currentPath = Astro.params.slug ?? ''
+
+const allCategories = await getAllCategories()
+const allPosts = await getLearnPosts()
+const pathMap = buildCategoryPathMap(allCategories)
+const pathToCategory = buildPathToCategoryMap(allCategories, pathMap)
+
+const currentCategory = allCategories.find((c) => c.$id === categoryId)!
+const subCategories = getChildCategories(currentCategory.handle, allCategories)
+const posts = filterPostsByCategory(currentCategory.handle, allPosts)
+const rootCategories = getRootCategories(allCategories)
+
+const breadcrumbSegments = currentPath
+	.split('/')
+	.reduce<Array<{ label: string; href: string }>>((acc, _, idx, parts) => {
+		const partial = parts.slice(0, idx + 1).join('/')
+		const cat = pathToCategory[partial]
+		acc.push({ label: cat?.title ?? partial, href: `/learn/${partial}` })
+		return acc
+	}, [])
+---
+
+<BaseLayout title={currentCategory.title} description={currentCategory.description}>
+	<div class='flex gap-8 mt-6'>
+		<aside class='hidden lg:block w-56 shrink-0'>
+			<a
+				href='/learn'
+				class='text-xs uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-3 font-semibold flex items-center gap-1 hover:text-blue dark:hover:text-blue-light transition-colors'
+			>
+				← Library
+			</a>
+			<nav class='flex flex-col gap-0.5 mt-3'>
+				{
+					rootCategories.map((cat) => (
+						<DirectoryTree
+							category={cat}
+							allCategories={allCategories}
+							pathMap={pathMap}
+							depth={0}
+							expandedPath={currentPath}
+						/>
+					))
+				}
+			</nav>
+		</aside>
+
+		<div class='flex-1 min-w-0'>
+			<nav class='flex items-center gap-1.5 text-sm text-stone-400 mb-4 flex-wrap'>
+				<a href='/learn' class='hover:text-blue dark:hover:text-blue-light transition-colors'
+					>Library</a
+				>
+				{
+					breadcrumbSegments.map((seg, i) => (
+						<>
+							<span>/</span>
+							{i < breadcrumbSegments.length - 1 ? (
+								<a
+									href={seg.href}
+									class='hover:text-blue dark:hover:text-blue-light transition-colors'
+								>
+									{seg.label}
+								</a>
+							) : (
+								<span class='text-stone-600 dark:text-stone-300 font-medium'>{seg.label}</span>
+							)}
+						</>
+					))
+				}
+			</nav>
+
+			<TitlePage title={currentCategory.title} />
+
+			{
+				currentCategory.description && (
+					<p class='text-stone-500 dark:text-stone-400 mt-1 mb-8 text-sm relative z-10'>
+						{currentCategory.description}
+					</p>
+				)
+			}
+
+			{
+				subCategories.length > 0 && (
+					<section class='mb-8'>
+						<h2 class='text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3'>
+							Folders
+						</h2>
+						<div class='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+							{subCategories.map((sub) => (
+								<a
+									href={`/learn/${pathMap[sub.$id]}`}
+									class='flex items-center gap-3 p-4 rounded-2xl border border-stone-200 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500 transition-colors group'
+								>
+									<span class='text-2xl'>📁</span>
+									<div class='min-w-0'>
+										<p class='font-medium group-hover:text-blue dark:group-hover:text-blue-light transition-colors'>
+											{sub.title}
+										</p>
+										{sub.description && (
+											<p class='text-xs text-stone-400 mt-0.5 line-clamp-1'>{sub.description}</p>
+										)}
+									</div>
+								</a>
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			{
+				posts.length > 0 && (
+					<section>
+						<h2 class='text-xs font-semibold uppercase tracking-widest text-stone-400 mb-3'>
+							{posts.length} {posts.length === 1 ? 'Post' : 'Posts'}
+						</h2>
+						<div class='flex flex-col gap-3'>
+							{posts.map((post) => (
+								<LearningPostCard post={post} />
+							))}
+						</div>
+					</section>
+				)
+			}
+
+			{
+				subCategories.length === 0 && posts.length === 0 && (
+					<p class='text-stone-400 dark:text-stone-500 mt-12 text-center py-12 border border-dashed border-stone-200 dark:border-stone-700 rounded-2xl'>
+						This directory is empty.
+					</p>
+				)
+			}
+		</div>
+	</div>
+</BaseLayout>

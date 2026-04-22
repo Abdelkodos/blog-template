@@ -3,9 +3,12 @@ import BaseLayout from '@/layouts/BaseLayout'
 import Hero from '@/components/Hero'
 import PostCard from '@/components/PostCard'
 import Sidebar from '@/components/Sidebar'
-import { getPosts } from '@/utils'
+import LearningPostCard from '@/components/LearningPostCard'
+import { getBlogPosts } from '@/utils/blog'
+import { getLearnPosts } from '@/utils/learn'
 
-const posts = await getPosts()
+const posts = await getBlogPosts()
+const learnPosts = await getLearnPosts(3).catch(() => [])
 ---
 
 <BaseLayout title='Home'>
@@ -22,21 +25,43 @@ const posts = await getPosts()
 			</h2>
 			<div class='grid grid-cols-1 sm:grid-cols-2 gap-6'>
 				{
-					posts.map(async (post) => {
-						const { remarkPluginFrontmatter } = await post.render()
-						return (
-							<PostCard
-								id={post.id}
-								data={post.data}
-								slug={post.slug}
-								readTime={remarkPluginFrontmatter.minutesRead}
-							/>
-						)
-					})
+					posts.map((post) => (
+						<PostCard
+							title={post.title}
+							heroImage={post.heroImage}
+							category={post.category}
+							slug={post.slug}
+							readTime={post.readTime}
+						/>
+					))
 				}
 			</div>
 		</section>
 
 		<Sidebar />
 	</div>
+
+	<!-- From the Library -->
+	{
+		learnPosts.length > 0 && (
+			<section class='mt-16'>
+				<div class='flex items-center justify-between mb-5'>
+					<h2 class='text-base font-semibold text-gray-500 dark:text-gray-400 tracking-wide uppercase'>
+						From the Library
+					</h2>
+					<a
+						href='/learn'
+						class='text-sm font-medium text-blue dark:text-blue-light hover:underline'
+					>
+						View all →
+					</a>
+				</div>
+				<div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+					{learnPosts.map((post) => (
+						<LearningPostCard post={post} />
+					))}
+				</div>
+			</section>
+		)
+	}
 </BaseLayout>

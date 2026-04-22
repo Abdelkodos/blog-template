@@ -7,24 +7,14 @@ import { siteConfig } from '@/data/site.config'
 <header class='flex flex-col gap-3 pt-4 pb-2'>
 	<!-- Row 1: Logo + actions -->
 	<div class='flex items-center justify-between'>
-		<a href='/' class='text-2xl font-bold tracking-tight'>
-			<span class='text-green-600 dark:text-green-400'>{siteConfig.title}</span>
+		<a href='/' class='text-2xl font-bold tracking-tight text-display'>
+			<span class='text-blue dark:text-blue-light'>{siteConfig.title}</span>
 		</a>
 
 		<div class='flex items-center gap-2'>
 			<ToggleTheme />
-			<a
-				href='/tags'
-				class='hidden sm:inline-block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-1.5 rounded-full transition-colors'
-			>
-				Log In
-			</a>
-			<a
-				href='/rss.xml'
-				class='hidden sm:inline-block text-sm font-semibold bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded-full transition-colors'
-			>
-				Subscribe
-			</a>
+			<a href='/tags' class='hidden sm:inline-block btn btn-sm btn-ghost'> Log In</a>
+			<a href='/rss.xml' class='hidden sm:inline-block btn btn-sm btn-primary'> Subscribe</a>
 		</div>
 	</div>
 
@@ -35,16 +25,22 @@ import { siteConfig } from '@/data/site.config'
 		</div>
 		<nav class='hidden md:flex items-center gap-4 flex-shrink-0'>
 			<a
-				href='/tags'
-				class='text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors whitespace-nowrap'
+				href='/learn'
+				class='text-sm font-medium text-lgray-600 dark:text-lgray-400 hover:text-navy dark:hover:text-white transition-colors whitespace-nowrap'
 			>
 				Categories
 			</a>
 			<a
 				href='/tags'
-				class='text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors whitespace-nowrap'
+				class='text-sm font-medium text-lgray-600 dark:text-lgray-400 hover:text-navy dark:hover:text-white transition-colors whitespace-nowrap'
 			>
 				Top Posts
+			</a>
+			<a
+				href='/learn'
+				class='text-sm font-medium text-lgray-600 dark:text-lgray-400 hover:text-navy dark:hover:text-white transition-colors whitespace-nowrap'
+			>
+				Library
 			</a>
 		</nav>
 	</div>

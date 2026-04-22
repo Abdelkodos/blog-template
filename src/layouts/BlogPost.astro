@@ -1,20 +1,19 @@
 ---
-import type { CollectionEntry } from 'astro:content'
 import BaseLayout from '@/layouts/BaseLayout'
-import { Image } from 'astro:assets'
 import { siteConfig } from '@/data/site.config'
 
 type Props = {
-	id: CollectionEntry<'blog'>['id']
-	data: CollectionEntry<'blog'>['data']
-	headings: import('astro').MarkdownHeading[]
-	readTime: string
+	title: string
+	description: string
+	pubDate: string
+	heroImage: string
+	category: string
+	readTime?: string
 }
 
-const { data, readTime } = Astro.props
-const { title, description, pubDate, heroImage, category } = data
+const { title, description, pubDate, heroImage, category, readTime } = Astro.props
 
-const articleDate = pubDate.toISOString()
+const articleDate = new Date(pubDate).toISOString()
 
 const authorName = siteConfig.author
 const initials = authorName
@@ -27,23 +26,15 @@ const initials = authorName
 const readMinutes = readTime?.replace(' min read', '') ?? '?'
 ---
 
-<BaseLayout
-	title={title}
-	description={description}
-	image={heroImage?.src}
-	articleDate={articleDate}
->
+<BaseLayout title={title} description={description} image={heroImage} articleDate={articleDate}>
 	<article class='min-w-full'>
-		<!-- Full-width hero image -->
 		{
 			heroImage && (
 				<div class='-mx-5 sm:-mx-8 lg:-mx-0 overflow-hidden rounded-none lg:rounded-2xl mb-6'>
-					<Image
+					<img
 						src={heroImage}
-						width={1200}
-						height={500}
-						quality={90}
-						format='jpg'
+						width='1200'
+						height='500'
 						loading='eager'
 						class='w-full max-h-[340px] md:max-h-[480px] object-cover'
 						alt={`img of ${title}`}
@@ -52,15 +43,13 @@ const readMinutes = readTime?.replace(' min read', '') ?? '?'
 			)
 		}
 
-		<!-- Title -->
 		<h1 class='text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-4'>
 			{title}
 		</h1>
 
-		<!-- Author bar -->
 		<div class='flex items-center gap-3 mb-8 pb-6 border-b border-gray-200 dark:border-gray-700'>
 			<div
-				class='w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0'
+				class='w-10 h-10 rounded-full bg-blue flex items-center justify-center text-white text-sm font-bold flex-shrink-0'
 			>
 				{initials}
 			</div>
@@ -86,22 +75,18 @@ const readMinutes = readTime?.replace(' min read', '') ?? '?'
 			</div>
 		</div>
 
-		<!-- Post content -->
 		<div class='prose prose-lg dark:prose-invert max-w-none mb-10'>
 			<slot />
 		</div>
 
-		<!-- Share + Save row -->
 		<div class='border-t border-b border-gray-200 dark:border-gray-700 py-5 my-8'>
 			<slot name='share' />
 		</div>
 
-		<!-- Related posts -->
 		<div class='mt-8'>
 			<slot name='related' />
 		</div>
 
-		<!-- Comments -->
 		<div class='mt-8'>
 			<slot name='comments' />
 		</div>
@@ -118,10 +103,10 @@ const readMinutes = readTime?.replace(' min read', '') ?? '?'
 				const index = document.querySelector(`aside a[href="#${entry.target.id}"]`)
 				if (entry.isIntersecting) {
 					index?.classList.remove('bg-slate-200', 'dark:bg-slate-800')
-					index?.classList.add('bg-green-600', 'text-white', 'font-bold')
+					index?.classList.add('bg-blue', 'text-white', 'font-bold')
 				} else {
 					index?.classList.add('bg-slate-200', 'dark:bg-slate-800')
-					index?.classList.remove('bg-green-600', 'text-white', 'font-bold')
+					index?.classList.remove('bg-blue', 'text-white', 'font-bold')
 				}
 			})
 		}

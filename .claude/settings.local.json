@@ -1,0 +1,11 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(pnpm dev *)",
+			"Read(//c/Users/User/workspace/**)",
+			"Bash(npx create-next-app@latest tutoreviews-cms --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-turbopack --use-pnpm)",
+			"Bash(pnpm add *)",
+			"Bash(pnpm build *)"
+		]
+	}
+}

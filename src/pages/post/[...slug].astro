@@ -1,58 +1,57 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content'
 import BlogPost from '@/layouts/BlogPost'
-import Code from '@/components/mdx/Code'
-import ListRelatedPosts from '@/components/ListRelatedPosts'
 import Share from '@/components/Share'
-import { getPosts } from '@/utils'
-import SButton from '@/components/mdx/SButton'
+import ListRelatedPosts from '@/components/ListRelatedPosts'
 import Disqus from '@/components/Disqus'
 import { disqusConfig } from '@/data/disqus.config'
+import { getBlogPosts, getBlogPostBySlug } from '@/utils/blog'
+import type { BlogPost as BlogPostType } from '@/utils/blog'
+import { marked } from 'marked'
 
-const posts = await getCollection('blog')
 export async function getStaticPaths() {
-	const posts = await getPosts()
+	const posts = await getBlogPosts()
 	return posts.map((post) => ({
 		params: { slug: post.slug },
-		props: post
+		props: { slug: post.slug }
 	}))
 }
-type Props = CollectionEntry<'blog'>
 
-const post = Astro.props
-const MAX_POSTS = 3
-const getRelatedPosts = (post: Props) => {
-	const lowercaseTags = post.data.tags.map((tag) => tag.toLowerCase())
-	const relatedPosts = posts.filter(
-		(p) => p.slug !== post.slug && p.data.tags.some((t) => lowercaseTags.includes(t.toLowerCase()))
-	)
-	return relatedPosts.slice(0, MAX_POSTS)
+const { slug } = Astro.props
+const post = await getBlogPostBySlug(slug)
+
+if (!post) {
+	return Astro.redirect('/404')
 }
 
-const relatedPosts = getRelatedPosts(post)
-const { Content, headings, remarkPluginFrontmatter } = await post.render()
+const allPosts = await getBlogPosts()
+const MAX_POSTS = 3
+const lowercaseTags = post.tags.map((t) => t.toLowerCase())
+const relatedPosts = allPosts
+	.filter(
+		(p) => p.slug !== post.slug && p.tags.some((t) => lowercaseTags.includes(t.toLowerCase()))
+	)
+	.slice(0, MAX_POSTS)
+
+const htmlContent = await marked(post.body)
 const disqusEnabled = disqusConfig.enabled
 ---
 
 <BlogPost
-	id={post.id}
-	data={post.data}
-	headings={headings}
-	readTime={remarkPluginFrontmatter.minutesRead}
+	title={post.title}
+	description={post.description}
+	pubDate={post.pubDate}
+	heroImage={post.heroImage}
+	category={post.category}
+	readTime={post.readTime}
 >
-	<!-- Main content -->
-	<Content components={{ pre: Code, SButton }} />
+	<Fragment set:html={htmlContent} />
 
-	<!-- Share bar -->
 	<Share slot='share' />
 
-	<!-- Related posts -->
 	<ListRelatedPosts slot='related' posts={relatedPosts} />
 
-	<!-- Comments -->
 	{disqusEnabled && <Disqus slot='comments' />}
 
-	<!-- Comments input (always shown, inkwell style) -->
 	<div slot='comments' class='mt-8'>
 		<h2 class='font-bold text-lg text-gray-900 dark:text-white mb-4'>Comments</h2>
 		<div
@@ -64,7 +63,7 @@ const disqusEnabled = disqusConfig.enabled
 				class='flex-1 bg-transparent text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 outline-none'
 			/>
 			<button
-				class='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors'
+				class='text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-blue dark:hover:text-blue-light transition-colors'
 			>
 				Post
 			</button>

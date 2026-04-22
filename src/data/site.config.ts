@@ -11,9 +11,9 @@ interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
 	site: 'https://tutoreviews.com', // Write here your website url
-	author: 'Your Name', // Site author
-	title: 'Astro Theme OpenBlog', // Site title.
-	description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', // Description to display in the meta tags
+	author: 'Abdelkouddouss Mekkaoui', // Site author
+	title: 'Tutorial Reviews', // Site title.
+	description: 'Curated tutorial reviews, tech news, and learning resources for developers.', // Description to display in the meta tags
 	lang: 'en-GB',
 	ogLocale: 'en_GB',
 	shareMessage: 'Share this post', // Message to share a post on social media

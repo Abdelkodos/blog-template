@@ -1,12 +1,7 @@
 ---
-import { Image } from 'astro:assets'
 import { siteConfig } from '@/data/site.config'
 
-const {
-	data: { title, heroImage, category },
-	readTime,
-	slug
-} = Astro.props
+const { title, heroImage, category, readTime, slug } = Astro.props
 
 const authorName = siteConfig.author
 const initials = authorName
@@ -19,13 +14,13 @@ const initials = authorName
 
 <article class='flex flex-col gap-3 group'>
 	<a class='relative overflow-hidden rounded-2xl block aspect-[4/3]' href={`/post/${slug}/`}>
-		<Image
+		<img
 			src={heroImage}
-			width={600}
-			height={400}
-			format='webp'
+			width='600'
+			height='400'
 			class='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
 			alt={`img of ${title}`}
+			loading='lazy'
 		/>
 	</a>
 
@@ -38,14 +33,14 @@ const initials = authorName
 
 		<a
 			href={`/post/${slug}/`}
-			class='text-lg font-bold text-gray-900 dark:text-white leading-snug hover:text-green-600 dark:hover:text-green-400 transition-colors line-clamp-2'
+			class='text-lg font-bold text-gray-900 dark:text-white leading-snug hover:text-blue dark:hover:text-blue-light transition-colors line-clamp-2'
 		>
 			{title}
 		</a>
 
 		<div class='flex items-center gap-2'>
 			<div
-				class='w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0'
+				class='w-6 h-6 rounded-full bg-blue flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0'
 			>
 				{initials}
 			</div>
